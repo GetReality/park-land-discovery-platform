@@ -1,119 +1,89 @@
-import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import compression from 'compression';
-import rateLimit from 'express-rate-limit';
+import dotenv from 'dotenv';
 
-import { errorHandler } from './middleware/errorHandler';
-import { logger } from './utils/logger';
-import { connectDatabase } from './config/database';
-
-// Import routes
-import authRoutes from './routes/auth';
-import parkRoutes from './routes/parks';
-import landRoutes from './routes/land';
-import searchRoutes from './routes/search';
-import userRoutes from './routes/users';
-
-// Load environment variables
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 8080;
 
-// Security middleware
-app.use(helmet({
-  contentSecurityPolicy: false, // Allow Mapbox and other external resources
-  crossOriginEmbedderPolicy: false
-}));
-
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
-});
-app.use('/api/', limiter);
-
-// CORS configuration
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
-
-// Compression and parsing
+// Middleware
+app.use(helmet());
+app.use(cors());
 app.use(compression());
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(morgan('combined'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Logging
-if (process.env.NODE_ENV !== 'test') {
-  app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
-}
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV
+// Basic routes
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Park Land Discovery Platform API',
+    version: '1.0.0',
+    status: 'running'
   });
 });
 
-// API routes
-app.use('/api/auth', authRoutes);
-app.use('/api/parks', parkRoutes);
-app.use('/api/land', landRoutes);
-app.use('/api/search', searchRoutes);
-app.use('/api/users', userRoutes);
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// Sample parks endpoint
+app.get('/api/parks', (req, res) => {
+  res.json({
+    message: 'Parks endpoint working',
+    data: [
+      {
+        id: 1,
+        name: 'Yellowstone National Park',
+        state: 'Wyoming',
+        type: 'National'
+      },
+      {
+        id: 2,
+        name: 'Grand Canyon National Park', 
+        state: 'Arizona',
+        type: 'National'
+      }
+    ]
+  });
+});
+
+// Sample land parcels endpoint
+app.get('/api/land', (req, res) => {
+  res.json({
+    message: 'Land parcels endpoint working',
+    data: []
+  });
+});
+
+// Error handling
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error(err.stack);
+  res.status(500).json({ 
+    message: 'Something went wrong!',
+    error: process.env.NODE_ENV === 'production' ? {} : err.message
+  });
+});
 
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({ 
-    error: 'Route not found',
-    message: `The requested route ${req.originalUrl} does not exist.`
+    message: 'Route not found',
+    path: req.originalUrl
   });
 });
 
-// Global error handler
-app.use(errorHandler);
-
-// Start server
-async function startServer() {
-  try {
-    // Connect to database
-    await connectDatabase();
-    logger.info('Database connected successfully');
-
-    app.listen(PORT, () => {
-      logger.info(`🚀 Server running on port ${PORT}`);
-      logger.info(`📊 Environment: ${process.env.NODE_ENV}`);
-      logger.info(`🔗 API Base URL: http://localhost:${PORT}/api`);
-    });
-  } catch (error) {
-    logger.error('Failed to start server:', error);
-    process.exit(1);
-  }
-}
-
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  logger.info('SIGTERM received, shutting down gracefully');
-  process.exit(0);
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
-
-process.on('SIGINT', () => {
-  logger.info('SIGINT received, shutting down gracefully');
-  process.exit(0);
-});
-
-if (require.main === module) {
-  startServer();
-}
 
 export default app;
