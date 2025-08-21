@@ -1,0 +1,19 @@
+{
+  "name": "park-land-discovery-platform",
+  "version": "1.0.0",
+  "description": "A comprehensive platform for discovering land properties near national and state parks",
+  "scripts": {
+    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
+    "build": "cd backend && npm run build && cd ../frontend && npm run build",
+    "start": "cd backend && npm start",
+    "test": "cd backend && npm test && cd ../frontend && npm test",
+    "deploy": "cd deployment && ./deploy.sh"
+  },
+  "keywords": ["real-estate", "parks", "land", "property", "investment"],
+  "author": "Park Land Discovery Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
