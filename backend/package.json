@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
-    "build": "tsc",
+    "build": "npx tsc",
     "test": "echo \"No tests yet\"",
     "postinstall": "npm run build"
   },
@@ -16,7 +16,10 @@
     "helmet": "^7.0.0",
     "morgan": "^1.10.0",
     "dotenv": "^16.3.1",
-    "compression": "^1.7.4"
+    "compression": "^1.7.4",
+    "pg": "^8.11.3",
+    "typescript": "^5.1.6",
+    "ts-node": "^10.9.1"
   },
   "devDependencies": {
     "@types/node": "^20.5.0",
@@ -24,8 +27,7 @@
     "@types/cors": "^2.8.13",
     "@types/morgan": "^1.9.4",
     "@types/compression": "^1.7.2",
-    "typescript": "^5.1.6",
-    "ts-node": "^10.9.1"
+    "@types/pg": "^8.10.2"
   },
   "engines": {
     "node": ">=18.0.0",
