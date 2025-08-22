@@ -1,6 +1,7 @@
-name: park-land-platform
+name: park-land-discovery-platform
+region: nyc
+
 services:
-# Backend API Service
 - name: api
   source_dir: /backend
   github:
@@ -20,15 +21,16 @@ services:
   - key: PORT
     value: "8080"
   - key: DATABASE_URL
-    value: ${DATABASE_URL}
+    type: SECRET
   - key: JWT_SECRET
-    value: ${JWT_SECRET}
+    type: SECRET
+  - key: CORS_ORIGIN
+    value: https://park-land-discovery-platform-web.ondigitalocean.app
 
-# Frontend Static Site Service  
 - name: web
   source_dir: /frontend
   github:
-    repo: getreality/park-land-discovery-platform
+    repo: getreality/park-land-discovery-platform  
     branch: main
   build_command: npm install && npm run build
   environment_slug: node-js
@@ -38,11 +40,10 @@ services:
   - path: /
   envs:
   - key: VITE_API_URL
-    value: ${_self.URL}/api
+    value: https://park-land-discovery-platform-api.ondigitalocean.app/api
   - key: VITE_MAPBOX_ACCESS_TOKEN
-    value: ${MAPBOX_ACCESS_TOKEN}
+    type: SECRET
 
-# Database
 databases:
 - name: park-land-db
   engine: PG

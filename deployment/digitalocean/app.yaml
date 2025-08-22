@@ -5,54 +5,44 @@ services:
 - name: api
   source_dir: /backend
   github:
-    repo: your-username/park-land-discovery-platform
+    repo: getreality/park-land-discovery-platform
     branch: main
-  build_command: npm run build
+  build_command: npm install && npm run build
   run_command: npm start
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xxs
-  http_port: 3001
+  http_port: 8080
+  routes:
+  - path: /api
   envs:
   - key: NODE_ENV
     value: production
   - key: PORT
-    value: "3001"
+    value: "8080"
   - key: DATABASE_URL
     type: SECRET
   - key: JWT_SECRET
     type: SECRET
-  - key: REDIS_URL
-    type: SECRET
-  - key: MAPBOX_ACCESS_TOKEN
-    type: SECRET
   - key: CORS_ORIGIN
-    value: https://park-land-discovery-platform-frontend.ondigitalocean.app
+    value: https://park-land-discovery-platform-web.ondigitalocean.app
 
-- name: frontend
+- name: web
   source_dir: /frontend
   github:
-    repo: your-username/park-land-discovery-platform
+    repo: getreality/park-land-discovery-platform
     branch: main
-  build_command: npm run build
+  build_command: npm install && npm run build
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xxs
-  envs:
-  - key: VITE_API_BASE_URL
-    value: https://park-land-discovery-platform-api.ondigitalocean.app
-  - key: VITE_MAPBOX_ACCESS_TOKEN
-    type: SECRET
   routes:
   - path: /
-  static_sites:
-  - name: frontend
-    source_dir: /frontend
-    github:
-      repo: your-username/park-land-discovery-platform
-      branch: main
-    build_command: npm run build
-    output_dir: /dist
+  envs:
+  - key: VITE_API_URL
+    value: https://park-land-discovery-platform-api.ondigitalocean.app/api
+  - key: VITE_MAPBOX_ACCESS_TOKEN
+    type: SECRET
 
 databases:
 - name: park-land-db
