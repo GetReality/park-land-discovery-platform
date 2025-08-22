@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Park-Adjacent Land Discovery Platform</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="nav-brand">
+                <i class="fas fa-tree"></i>
+                <span>Park Discovery</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="#search" class="nav-link active">Search</a>
+                <a href="#analytics" class="nav-link">Analytics</a>
+                <a href="#about" class="nav-link">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Search Section -->
+        <section id="search" class="section active">
+            <div class="container">
+                <div class="search-header">
+                    <h1>Find Your Perfect Park-Adjacent Home</h1>
+                    <p>Discover properties near beautiful parks and green spaces</p>
+                </div>
+
+                <!-- Search Filters -->
+                <div class="filters-card">
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label for="min-price">Min Price ($)</label>
+                            <input type="number" id="min-price" placeholder="Any">
+                        </div>
+                        <div class="filter-group">
+                            <label for="max-price">Max Price ($)</label>
+                            <input type="number" id="max-price" placeholder="Any">
+                        </div>
+                        <div class="filter-group">
+                            <label for="bedrooms">Min Bedrooms</label>
+                            <select id="bedrooms">
+                                <option value="">Any</option>
+                                <option value="1">1+</option>
+                                <option value="2">2+</option>
+                                <option value="3">3+</option>
+                                <option value="4">4+</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="bathrooms">Min Bathrooms</label>
+                            <select id="bathrooms">
+                                <option value="">Any</option>
+                                <option value="1">1+</option>
+                                <option value="2">2+</option>
+                                <option value="3">3+</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="park-score">Min Park Score</label>
+                            <select id="park-score">
+                                <option value="">Any</option>
+                                <option value="60">60+</option>
+                                <option value="70">70+</option>
+                                <option value="80">80+</option>
+                                <option value="90">90+</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="max-distance">Max Distance to Park (m)</label>
+                            <select id="max-distance">
+                                <option value="">Any</option>
+                                <option value="200">200m</option>
+                                <option value="500">500m</option>
+                                <option value="1000">1km</option>
+                                <option value="2000">2km</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-actions">
+                        <button id="search-btn" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Search Properties
+                        </button>
+                        <button id="clear-filters" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Clear Filters
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="results-section">
+                    <div class="results-header">
+                        <h2>Search Results</h2>
+                        <div class="results-stats">
+                            <span id="results-count">0 properties found</span>
+                            <div class="view-toggle">
+                                <button id="list-view" class="btn btn-sm active">
+                                    <i class="fas fa-list"></i>
+                                </button>
+                                <button id="map-view" class="btn btn-sm">
+                                    <i class="fas fa-map"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div id="loading" class="loading-state" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>Searching properties...</span>
+                    </div>
+
+                    <!-- Results Grid -->
+                    <div id="results-grid" class="results-grid">
+                        <!-- Properties will be inserted here -->
+                    </div>
+
+                    <!-- Map Container -->
+                    <div id="map-container" class="map-container" style="display: none;">
+                        <div id="map"></div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div id="pagination" class="pagination">
+                        <!-- Pagination controls will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analytics Section -->
+        <section id="analytics" class="section">
+            <div class="container">
+                <h2>Platform Analytics</h2>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3>Park Score Distribution</h3>
+                        <div id="score-distribution-chart" class="chart-container">
+                            <div class="loading-chart">Loading analytics...</div>
+                        </div>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>Platform Statistics</h3>
+                        <div id="platform-stats" class="stats-container">
+                            <div class="stat-item">
+                                <span class="stat-label">Total Properties</span>
+                                <span class="stat-value" id="total-properties">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Average Park Score</span>
+                                <span class="stat-value" id="avg-park-score">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Total Parks</span>
+                                <span class="stat-value" id="total-parks">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="section">
+            <div class="container">
+                <div class="about-content">
+                    <h2>About Park Discovery Platform</h2>
+                    <p>Our platform helps you find the perfect home near beautiful parks and green spaces. We analyze proximity to parks, calculate park scores, and provide comprehensive property information to help you make informed decisions.</p>
+
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <h3>Location Intelligence</h3>
+                            <p>Advanced geospatial analysis to find properties near parks and green spaces.</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-chart-bar"></i>
+                            <h3>Park Scoring</h3>
+                            <p>Proprietary algorithm that scores properties based on park proximity and accessibility.</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-search"></i>
+                            <h3>Smart Filtering</h3>
+                            <p>Comprehensive filters to help you find exactly what you're looking for.</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="fas fa-leaf"></i>
+                            <h3>Green Living</h3>
+                            <p>Promote healthy, sustainable living by connecting people with nature.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Park Discovery Platform. Built with ❤️ for nature lovers.</p>
+        </div>
+    </footer>
+
+    <!-- Property Detail Modal -->
+    <div id="property-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Property Details</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-content-area">
+                    <!-- Property details will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
